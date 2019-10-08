@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>tic</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	
+	<style>
+		table{
+			margin:auto;
+		}
+
+		.reset{
+			margin: auto;
+			font-size: 20px;
+			color: rgba(255, 255, 255, 0.5);
+			width:100px;
+			text-align: center;
+		}
+
+		.reset:hover{
+			color: #ffffff;
+			cursor: pointer;
+		}
+
+		.scdisp{
+			margin: auto;
+		}
+
+		td{
+			width: 100px;
+			height: 100px;
+			border-color: rgba(255, 255, 255, 0.3);
+			border-width: 3px;
+			text-align: center;
+			font-size: 60px;
+			color: greenyellow;
+		}
+
+		.top{
+			border-style: none none solid none;
+		}
+
+		.bottom{
+			border-style: solid none none none;
+		}
+
+		.right{
+			border-style: none none none solid;
+		}
+
+		.left{
+			border-style: none solid none none;
+		}
+
+		td:hover{
+			cursor: pointer;
+			border-style: solid;
+			border-width: 3px;
+		}
+
+		h3{
+			margin-left: 25px;
+		}
+
+		.tscores thead td{
+			width: 150px;
+			font-size: 30px;
+		}
+
+		.tscores tbody td{
+			width: 150px;
+			font-size: 30px;
+		}
+
+		.tscores thead td:hover{
+			cursor: default;
+			border: none;
+		}
+
+		.tscores tbody td:hover{
+			cursor: default;
+			border: none;
+		}
+
+		.text-warning{
+			margin-top: 10px;
+		}
+
+	</style>
+	
+	<script>
+		var x = 0
+		var board = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
+		p1score = p2score = 0
+
+		function allclear(){
+			v = 'no';
+			for(i = 1;i<=9;i++){
+				document.getElementById(v+i).innerHTML = '';
+			}
+			board = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+		}
+
+		function changeScore(n){
+			document.getElementById("p1score").innerHTML = p1score;
+			document.getElementById("p2score").innerHTML = p2score;
+			showresult(n);
+		}
+
+		function showresult(n){
+			res = document.getElementById("result");
+			if(n == 0){
+				res.innerHTML = "It's a Draw";
+			}
+			else
+				res.innerHTML = "P" + n + " Wins."; 
+		}
+
+		function check(){
+			for(i=0;i<3;i++){
+				xs = 0
+				os = 0
+				for(j=0;j<3;j++){
+				    xs += (board[i][j] == 0)? 1: 0;
+				    os += (board[i][j] == 1)? 1: 0;
+				}
+				if(xs == 3){
+				    p1score ++;
+				    changeScore(1);
+				    return;
+				}
+				else if(os == 3){
+				    p2score++;
+				    changeScore(2);
+				    return;
+				}
+			}
+
+			for(i=0;i<3;i++){
+				xs = 0
+				os = 0
+				for(j=0;j<3;j++){
+				    xs += (board[j][i] == 0)? 1: 0;
+				    os += (board[j][i] == 1)? 1: 0;
+				}
+				if(xs == 3){
+				    p1score ++;
+				    changeScore(1);
+				    return;
+				}
+				else if(os == 3){
+				    p2score++;
+				    changeScore(2);
+				    return;
+				}
+			}
+
+			xs = os = 0
+			for( i = 0;i < 3;i++){
+				xs += (board[i][i] == 0)? 1: 0;
+				os += (board[i][i] == 1)? 1: 0;
+			}
+			if(xs == 3){
+				p1score ++;
+				changeScore(1);
+				return;
+			}
+			else if(os == 3){
+				p2score++;
+				changeScore(2);
+				return;
+			}
+
+			xs = os = 0
+			for( i = 2;i >= 0;i--){
+				xs += (board[i][2 - i] == 0)? 1: 0;
+				os += (board[i][2 - i] == 1)? 1: 0;
+			}
+			if(xs == 3){
+				p1score ++;
+				changeScore(1);
+				return;
+			}
+			else if(os == 3){
+				p2score++;
+				changeScore(2);
+				return;
+			}
+
+		}    
+
+		function func(id) {
+			v = 'no' + id;
+			var val = document.getElementById(v);
+			if(val.innerHTML == ''){
+				val.innerHTML = (x%2==0)?'X':'O';
+				id -= 1;
+				board[Math.floor(id/3)][id%3] = (x%2==0)?0:1;
+				check();
+			}
+			else{
+				alert("you cant use the same tile");
+				return;
+			}
+			x++;
+			if(x % 9 == 0)
+				showresult(0);
+		}
+	
+	</script>
+	
+</head>
+<body class="bg-dark">
+
+	<table>
+		
+		<tbody>
+			<tr class="top">
+				<td class="left" id="no1" onclick="func(1)"></td>
+				<td id="no2" onclick="func(2)"></td>
+				<td class="right" id="no3" onclick="func(3)"></td>
+			</tr>
+
+			<tr>
+				<td class="left" id="no4" onclick="func(4)"></td>
+				<td id="no5" onclick="func(5)"></td>
+				<td class="right" id="no6" onclick="func(6)"></td>
+			</tr>
+
+			<tr class="bottom">
+				<td class="left" id="no7" onclick="func(7)"></td>
+				<td id="no8" onclick="func(8)"></td>
+				<td class="right" id="no9" onclick="func(9)"></td>
+			</tr>
+
+		</tbody>
+
+	</table>
+
+	<p class="reset" onclick="allclear()"> RESET </p>
+
+	<h5 class="text-warning display-5 text-center" id="result">Play Around</h4>
+
+	<h3 class="display-1 text-success text-center"> Scores: </h3>
+
+	<table class="tscores">
+
+		<thead>
+			<td class="display-2 text-info">P1</td>
+			<td class="display-2 text-info">P2</td>
+	l	</thead>
+
+		<tbody>
+			<td id="p1score">0</td>
+			<td id="p2score">0</td>
+		</tbody>
+
+	</table>
+
+</body>
+</html>
