@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>join 'em dots</title>
+
+        <style>
+
+            canvas{
+                border: 2px solid black;
+                margin-left: 30%;
+                margin-top: 20px;
+            }
+        
+        </style>
+
+    </head>
+
+    <body style="margin: 0px;">
+
+        <canvas>
+
+        </canvas>
+
+
+        <script>
+
+                var canv = document.querySelector("canvas");
+    
+                canv.width = window.innerWidth * 0.4;
+                canv.height = canv.width;
+
+                var move = true;
+
+                var c = canv.getContext('2d');
+                var mouse_x = null, mouse_y = null;
+
+                var src_x = null, dest_x = null, src_y = null, dest_y = null, drawable = false;
+                var src_x_ind = -1, src_y_ind = -1, dest_x_ind = -1, dest_y_ind = -1;
+
+                var scores = [0, 0], done = 0;
+
+                var dots = [];
+
+                function reset(){
+                    src_x = src_y = dest_x = dest_y = null;
+                    drawable = false;
+                    dots[src_x_ind][src_y_ind].color = "rgba(0, 0, 0, 0.4)";
+                    dots[src_x_ind][src_y_ind].draw();
+                    c.clearRect(src_x - 10, src_y - 10, 20, 20);
+                    dots[dest_x_ind][dest_y_ind].color = "rgba(0, 0, 0, 0.4)";
+                    c.clearRect(dest_x - 10, dest_y - 10, 20, 20);
+                    dots[dest_x_ind][dest_y_ind].draw();
+                }
+
+                function check(dir){
+                    c.fillStyle = (move)?"#006699":"#cc0000";
+					var prev = done;
+                    try{
+                        switch(dir){
+                            case 1: if(dots[src_x_ind][src_y_ind].down.left.up){
+                                        c.fillRect(dest_x + 12, dest_y + 12, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                        scores[(move)?0:1] += 1;
+                                        done += 1;
+                                        throw err;
+                                    }
+                                    break;
+                            case 2: if(dots[src_x_ind][src_y_ind].up.right.down){
+                                        c.fillRect(src_x + 12, src_y + 12 - 0.09 * canv.width, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                        scores[(move)?0:1] += 1;
+                                        done += 1;
+                                        throw err;
+                                    }
+                                    break;
+                            case 3: if(dots[src_x_ind][src_y_ind].left.up.right) {
+                                        c.fillRect(dest_x + 12 - 0.09 * canv.width, dest_y + 12, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                        scores[(move)?0:1] += 1;
+                                        done += 1;
+                                        throw err;
+                                    }
+                                    break;
+                            case 4: if(dots[src_x_ind][src_y_ind].right.down.left){
+                                        c.fillRect(src_x + 12, src_y + 12, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                        scores[(move)?0:1] += 1;
+                                        done += 1;
+                                        throw err;
+                                    }
+                                    break;
+                        }
+                        // if()
+                    }catch(err){
+                        try{
+                            switch(dir){
+                                case 1: if(dots[src_x_ind][src_y_ind].up.left.down){
+                                            c.fillRect(dest_x + 12, dest_y + 12 - 0.09 * canv.width, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                            scores[(move)?0:1] += 1;
+                                            done += 1;
+                                        }
+                                        break;
+                                case 2: if(dots[src_x_ind][src_y_ind].down.right.up) {
+                                            c.fillRect(src_x + 12, src_y + 12, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                            scores[(move)?0:1] += 1;
+                                            done += 1;
+                                        }
+                                        break;
+                                case 3: if(dots[src_x_ind][src_y_ind].right.up.left) {
+                                            c.fillRect(dest_x + 12, dest_y + 12, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                            scores[(move)?0:1] += 1;
+                                            done += 1;
+                                        }
+                                        break;
+                                case 4: if(dots[src_x_ind][src_y_ind].left.down.right) {
+                                            c.fillRect(src_x + 12 - 0.09 * canv.width, src_y + 12, 0.09 * canv.width - 24, 0.09 * canv.width - 24);
+                                            scores[(move)?0:1] += 1;
+                                            done += 1;
+                                        }
+                                        break;
+                            }
+                        }catch(err){}
+                    }
+                    c.fill();
+                    move = (done == prev)?!(move):move;
+                    // console.log(scores);   
+                }
+                
+                function drawLine(){
+                    c.beginPath();
+                    c.moveTo(src_x, src_y);
+                    c.lineTo(dest_x, dest_y);
+                    c.stroke();
+                    var dir = 0;
+                    if(src_x_ind > dest_x_ind){
+                        dots[src_x_ind][src_y_ind].left = dots[dest_x_ind][dest_y_ind];
+                        dots[dest_x_ind][dest_y_ind].right = dots[src_x_ind][src_y_ind];
+                        dir = 1; // left
+                    }
+                    else if(src_x_ind < dest_x_ind){
+                        dots[src_x_ind][src_y_ind].right = dots[dest_x_ind][dest_y_ind];
+                        dots[dest_x_ind][dest_y_ind].left = dots[src_x_ind][src_y_ind];
+                        dir = 2; // right
+                    }
+
+                    if(src_y_ind > dest_y_ind){
+                        dots[src_x_ind][src_y_ind].up = dots[dest_x_ind][dest_y_ind];
+                        dots[dest_x_ind][dest_y_ind].down = dots[src_x_ind][src_y_ind];
+                        dir = 3; // up
+                    }
+                    else if(src_y_ind < dest_y_ind){
+                        dots[src_x_ind][src_y_ind].down = dots[dest_x_ind][dest_y_ind];
+                        dots[dest_x_ind][dest_y_ind].up = dots[src_x_ind][src_y_ind];
+                        dir = 4; // down
+                    }
+                    check(dir);
+                    reset();
+                    if(done == 10){
+                        alert("Player 1:"+scores[0]+"Player 2:"+scores[1]);
+                    }
+                }
+
+                function Dot(x, y, r_id, c_id){
+                    this.x = x;
+                    this.y = y;
+                    this.r_id = r_id;
+                    this.c_id = c_id;
+                    this.rad = 10;
+                    this.right = null;
+                    this.left = null;
+                    this.up = null;
+                    this.down = null;
+                    this.color = "rgba(0, 0, 0, 0.4)";
+
+                    this.draw = function(){
+                        c.fillStyle = this.color;
+                        c.beginPath();
+                        c.arc(x, y, this.rad, 0, 2 * Math.PI);
+                        c.stroke();
+                        c.fill();
+                    }
+
+                    this.getDot = function(mouse_x, mouse_y){
+                        var extra = window.innerWidth * 0.3
+                        if(Math.abs(this.x + extra - mouse_x) <= 10 && Math.abs(this.y + 20 - mouse_y) <= 10){
+                            c.clearRect(this.x - 10, this.y - 10, 20, 20);
+                            this.color = (move)?"#006699":"#cc0000";
+                            this.draw();
+                            if(src_x == null){
+                                src_x = this.x;
+                                src_y = this.y;
+                                src_x_ind = this.r_id;
+                                src_y_ind = this.c_id;
+                            }
+                            else if(dest_x == null){
+                                dest_x = this.x;
+                                dest_y = this.y;
+                                dest_x_ind = this.r_id;
+                                dest_y_ind = this.c_id;
+                                drawable = true;
+                            }
+                            console.log(this.x, this.y);
+                        }
+                    }
+                }
+
+                for(i = 0; i < 10;i++){
+                    dots.push([])
+                    for(j = 0;j<10;j++){
+                        dots[i].push(new Dot(((i+1) * 0.09) * canv.width, ((j+1) * 0.09) * canv.width, i, j));
+                        dots[i][j].draw();
+                    }
+                }
+
+                window.addEventListener("mousedown", function(event){
+                    mouse_x = event.x;
+                    mouse_y = event.y;
+                    for(i = 0;i<10;i++){
+                        for(j=0;j<10;j++){
+                            dots[i][j].getDot(mouse_x, mouse_y);
+                        }
+                    }
+                    if(drawable){
+                        if((Math.abs(src_x_ind - dest_x_ind) == 0 && Math.abs(src_y_ind - dest_y_ind) == 1) || (Math.abs(src_x_ind - dest_x_ind) == 1 && Math.abs(src_y_ind - dest_y_ind) == 0))
+                            drawLine();
+                        else
+                            reset();
+                    }
+                });
+            
+        </script>
+
+    </body>
+
+</html>

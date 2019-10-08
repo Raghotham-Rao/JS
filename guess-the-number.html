@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Guess the number</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        
+        <style>
+        	div{
+				margin: auto;
+				width: 400px;
+				text-align: center;
+			}
+
+			.the-number{
+				border-style: solid;
+				border-radius: 100px;
+				width: 200px;
+				height: 200px;
+				text-align: center;
+				padding-top: 70px;
+				font-size: 30px;
+			}
+
+			.user-guess{
+				margin-top: 40px;
+				width: 400px;
+				text-align: center;
+				margin-bottom: 30px;
+			}
+
+			input[type="number"]{
+				width: 200px;
+			}
+        </style>
+        
+        <script>
+        	var rand_no = Math.floor(Math.random() * 100);
+			var score = 0;
+			var r = 150, g = 150, b = 150;
+
+			function change_color(){
+				color_val = "rgb(" + r + "," + g + "," + b + ")";
+				document.getElementById("the-number").style.borderColor = color_val;
+			}
+
+			function check(){
+				var entered_num = document.forms["this-form"]["entered-number"].value;
+				if(entered_num == rand_no){
+					document.getElementById("the-num").innerHTML = entered_num;
+				}
+				else{
+					if(entered_num > rand_no){
+						document.getElementById("the-num").innerHTML = "lower";
+					}
+					else if(entered_num < rand_no){
+						document.getElementById("the-num").innerHTML = "higer";
+					}
+					change_color();
+					document.getElementById("score").innerHTML = 'Attempts: ' + ++score;
+				}
+			}
+        </script>
+        
+    </head>
+
+    <body class="bg-dark">
+        <div class="container-fluid">
+
+            <h1 class="text-success display-1 text-center">Guess the Number</h1>
+
+            <div class="the-number text-warning border-warning" id="the-number">
+                <p id="the-num">Guess!</p>
+            </div>
+
+            <div class="user-guess">
+                <form name="this-form">
+                    <input type="number" name="entered-number" placeholder="Enter your guess"/>
+                    <input type="button" value="Check" onclick="check()"/>
+                </form>
+            </div>
+
+            <div class="result">
+                <h4 class="text-info display-4" id="score">Attempts: 0</h4>
+            </div>
+        </div>
+    </body>
+</html>
