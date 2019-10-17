@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <style>
+            #board{
+                width: 600px;
+                margin: auto;
+                margin-top: 3%;
+            }
+
+            #board button{
+                width: 50px;
+                margin: 5px;
+                float: left;
+                height: 50px;
+                font-size: 20px;
+                background-color: #bfbfbf;
+                border: none;
+                box-shadow: 2px 2px #333;
+            }
+
+            #board button:hover{
+                cursor: pointer;
+            }
+        </style>
+
+    </head>
+
+
+    <body onload="createBoard(false)">
+
+        <div id="board"></div>
+
+        <script>
+            
+            var board = document.getElementById("board");
+            // var mines = [];
+            var board_matrix = [], done_board = [];
+            var remaining = 85, start = 0, timer = null, time = 0;
+
+            function format(val){
+                return '0'.repeat((''+val).length % 2) + val;
+            }
+
+            function getTime(t){
+                return format(parseInt(t/3600))+":"+format(parseInt(t/60))+":"+format(t%60);
+            }
+
+            function displayTile(i, j, zero_tile){
+                if(!zero_tile)
+                    document.getElementById(i+""+j).innerHTML = board_matrix[i][j];
+                document.getElementById(i+""+j).style.backgroundColor = "#8c8c8c";
+                document.getElementById(i+""+j).style.boxShadow = "none";
+            }
+
+
+            function clearFew(r, c){
+                if(r<0 || r>=10 || c<0 || c>=10 || done_board[r][c] == 1)
+                    return;
+
+                if(board_matrix[r][c] == 0){
+                    displayTile(r, c, true);
+                    done_board[r][c] = 1;
+                    remaining --;
+                    clearFew(r-1, c-1);
+                    clearFew(r-1, c);
+                    clearFew(r-1, c+1);
+                    clearFew(r, c+1);
+                    clearFew(r+1, c+1);
+                    clearFew(r+1, c);
+                    clearFew(r+1, c-1);
+                    clearFew(r, c-1);
+                }
+                else if(board_matrix[r][c] > 0){
+                    displayTile(r, c, false);
+                    done_board[r][c] = 1;
+                    remaining --;
+                }
+                return;
+            }
+
+
+            function game(r, c){
+                var tile = document.getElementById(r+""+c);
+                if(start == 0){
+                    var timer = setInterval(function(){
+                        time ++;
+                    }, 1000);
+                    start = 1;
+                }
+                if(board_matrix[r][c] == -1){
+                    alert("hoge");
+                    clearInterval(timer);
+                    createBoard(true);
+                }
+                else{
+                    clearFew(r, c);
+                }
+                if(remaining == 0){
+                    alert("Psych! You Won!\nYour Time:" + getTime(time));
+                    createBoard(true);
+                }
+                console.log(remaining);
+            }
+
+
+            function changeValues(r, c){
+                var neighbors = [[r-1, c-1], [r-1, c], [r-1, c+1], [r, c+1], [r+1, c+1], [r+1, c], [r+1, c-1], [r, c-1]];
+                for(ii of neighbors){
+                    if(ii[0]<10 && ii[1]<10 && ii[0]>=0 && ii[1]>=0){
+                        board_matrix[ii[0]][ii[1]] += (board_matrix[ii[0]][ii[1]] == -1)?0:1;
+                    }
+                } 
+            }
+
+
+            function setMines(){
+                var count = 0
+                for(;;){
+                    var mr = parseInt(Math.random() * 10);
+                    var mc = parseInt(Math.random() * 10);
+                    if(board_matrix[mr][mc] == -1)
+                        continue;
+                    board_matrix[mr][mc] = -1;
+                    changeValues(mr, mc);
+                    // mines.push([mr, mc]);
+                    count++;
+                    if(count == 15)
+                        break;
+                }
+            }
+
+
+            function createBoard(isreset){
+
+                var code = '';
+                if(isreset){
+                    for(i=0;i<10;i++){
+                        for(j=0;j<10;j++){
+                            code += "<button id=\""+i+""+j+"\" onclick=\"game("+i+","+j+")\"></button>";
+                            board_matrix[i][j] = 0;
+                            done_board[i][j] = 0;
+                        }
+                    }
+                    start = 0;
+                    remaining = 85;
+                    time = 0;
+                }
+                else{
+                    for(i = 0;i<10;i++){
+                        board_matrix.push([]);
+                        done_board.push([]);
+                        for(j = 0;j<10;j++){
+                            code += "<button id=\""+i+""+j+"\" onclick=\"game("+i+","+j+")\"></button>";
+                            board_matrix[i].push(0);
+                            done_board[i].push(0);
+                        }
+                    }
+                }
+                board.innerHTML = code;
+                setMines();
+                console.log(board_matrix);
+                console.log(done_board);
+            }
+
+        </script>
+
+    </body>
+
+</html>
